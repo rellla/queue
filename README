@@ -1,0 +1,8 @@
+Simple Queue written in C
+
+WIP!
+This is my first attempt in doing some C coding, so be warned if you want to deal with that piece of code.
+It's not ready to use. Many errors are expected :p
+
+This Queue may include all necessary methods to do the queue handling within libvdpau-sunxi. 
+We will see ...
