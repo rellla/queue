@@ -4,14 +4,6 @@
 typedef struct TaskData
 {
 	int value;
-/*
-	struct timespec			when;
-	uint32_t				clip_width;
-	uint32_t				clip_height;
-	VdpOutputSurface		surface;
-	unsigned int			wipe_tasks;
-	VdpPresentationQueue	queue_id;
-*/
 } TaskData;
 
 typedef struct Task
