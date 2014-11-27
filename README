@@ -6,3 +6,6 @@ It's not ready to use. Many errors are expected :p
 
 This Queue may include all necessary methods to do the queue handling within libvdpau-sunxi. 
 We will see ...
+
+Build:
+gcc *.c -o queue
