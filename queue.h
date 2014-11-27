@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,6 +19,7 @@ typedef struct Queue
 {
 	struct Task* head;
 	struct Task* tail;
+	pthread_mutex_t mutex;
 } Queue;
 
 signed int sort_insert(Task* a, Task* b);

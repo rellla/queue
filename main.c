@@ -1,8 +1,17 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <time.h>
 #include "queue.h"
 
-int main()
+static Queue* queue = NULL;
+
+void *test_queue(void *param)
 {
-	Queue* queue = q_init();
+	int* val = (int*) calloc(sizeof(int), 1);
+	val = param;
+
+	if (!queue)
+		queue = q_init();
 
 	Task* task1 = t_init();
 	Task* task2 = t_init();
@@ -14,57 +23,109 @@ int main()
 	task3->data->value = 5;
 	task4->data->value = 7;
 
-	// Fill queue by pushing elements sorted
-	q_insert_sorted(queue, task2, sort_insert);
-	q_insert_sorted(queue, task4, sort_insert);
-	q_insert_sorted(queue, task3, sort_insert);
-	q_insert_sorted(queue, task1, sort_insert);
+	printf("(%d)Start filling.\n", *val);
 
-	printf("Insert sorted: ");
+	// Fill queue by pushing elements sorted
+	q_insert_sorted(queue, task2, sort_insert);	// printf("..\n");
+	q_insert_sorted(queue, task4, sort_insert);	// printf("...\n");
+	q_insert_sorted(queue, task3, sort_insert);	// printf("....\n");
+	q_insert_sorted(queue, task1, sort_insert);	// printf(".....\n");
+
+	if (*val == 1 )
+		usleep(100000);
+
+	printf("(%d)Insert sorted: ", *val);
 	q_showQueue(queue);
+		usleep (20000);
 
 	// Pop first element
 	q_pop_head(queue);
-	printf("Pop Head: ");
+	printf("(%d)Pop Head: ", *val);
 	q_showQueue(queue);
+		usleep (10000);
 
 	// Insert element at the right place
 	Task* task5 = t_init();
 	task5->data->value = 6;
 	q_insert_sorted(queue, task5, sort_insert);
-	printf("Insert sorted (6): ");
+	printf("(%d)Insert sorted (6): ", *val);
 	q_showQueue(queue);
+		usleep (20000);
 
 	// Pop last element
 	q_pop_tail(queue);
-	printf("Pop Tail: ");
+	printf("(%d)Pop Tail: ", *val);
 	q_showQueue(queue);
+		usleep (10040);
 
 	// Append element to the tail
 	Task* task6 = t_init();
 	task6->data->value = 4;
 	q_push_tail(queue, task6);
-	printf("Push Tail (4): ");
+	printf("(%d)Push Tail (4): ", *val);
 	q_showQueue(queue);
+		usleep (13000);
 
 	// Append element to the head
 	Task* task7 = t_init();
 	task7->data->value = 28;
 	q_push_head(queue, task7);
-	printf("Push Head (28): ");
+	printf("(%d)Push Head (28): ", *val);
 	q_showQueue(queue);
+		usleep (10435);
 
 	// Get head value
 	Task* task8 = q_peek_head(queue);
 	q_push_tail(queue, task8);
-	printf("Get head -> tail: ");
+	printf("(%d)Get head -> tail: ", *val);
 	q_showQueue(queue);
+		usleep (10337);
 
 	// Get tail value
 	Task* task9 = q_peek_tail(queue);
 	q_push_head(queue, task9);
-	printf("Get tail -> head: ");
+	printf("(%d)Get tail -> head: ", *val);
 	q_showQueue(queue);
+		usleep (20000);
+
+	return 0;
+}
+
+void* test_thread()
+{
+	int a = 0;
+	int b = 1;
+
+	pthread_t thread1, thread2;
+	pthread_create(&thread1, NULL, test_queue, &a);
+	printf("(%d)Thread created\n", a);
+
+	pthread_create(&thread2, NULL, test_queue, &b);
+	printf("(%d)Thread created\n", b);
+
+	pthread_join(thread1, NULL);
+	pthread_join(thread2, NULL);
+}
+
+int main(int argc, char *argv[])
+{
+	if (argc != 2)
+	{
+		printf("Argument missing:\n");
+		printf("%s test\t\tRun test\n", argv[0]);
+		printf("%s thread\t\tRun thread test\n", argv[0]);
+		return 0;
+	}
+	if (strcmp(argv[1], "test") == 0)
+	{
+		printf("Queue Test\n");
+		test_queue(0);
+	}
+	else if (strcmp(argv[1], "thread") == 0)
+	{
+		printf("Thread Test\n");
+		test_thread();
+	}
 
 	return 0;
 }
