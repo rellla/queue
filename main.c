@@ -109,23 +109,33 @@ void* test_thread()
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2)
+	if (argc == 2)
 	{
-		printf("Argument missing:\n");
+		if (strcmp(argv[1], "test") == 0)
+		{
+			printf("Queue Test\n");
+			int a = 0;
+			test_queue(&a);
+		}
+		else if (strcmp(argv[1], "thread") == 0)
+		{
+			printf("Thread Test\n");
+			test_thread();
+		}
+		else
+		{
+			printf("Wrong arguments:\n");
+			printf("%s test\t\tRun test\n", argv[0]);
+			printf("%s thread\t\tRun thread test\n", argv[0]);
+			return 0;
+		}
+	}
+	else
+	{
+		printf("Wrong arguments:\n");
 		printf("%s test\t\tRun test\n", argv[0]);
 		printf("%s thread\t\tRun thread test\n", argv[0]);
 		return 0;
 	}
-	if (strcmp(argv[1], "test") == 0)
-	{
-		printf("Queue Test\n");
-		test_queue(0);
-	}
-	else if (strcmp(argv[1], "thread") == 0)
-	{
-		printf("Thread Test\n");
-		test_thread();
-	}
-
 	return 0;
 }

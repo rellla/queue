@@ -8,4 +8,4 @@ This Queue may include all necessary methods to do the queue handling within lib
 We will see ...
 
 Build:
-gcc *.c -o queue
+make
