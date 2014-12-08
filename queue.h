@@ -2,16 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
 typedef struct TaskData
 {
 	int value;
 } TaskData;
+*/
 
 typedef struct Task
 {
 	struct Task*	prev;
 	struct Task*	next;
-	TaskData* data;
+	int value;
+//	TaskData* data;
 } Task;
 
 
@@ -37,4 +40,6 @@ Task* q_peek_head(Queue* queue);
 Task* q_peek_tail(Queue* queue);
 
 void q_showQueue(Queue* queue);
+void q_free(Queue* queue);
+void t_free(Task* task);
 int q_isEmpty(Queue* queue);

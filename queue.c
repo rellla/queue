@@ -9,51 +9,47 @@ Queue* q_init(void)
 	return queue;
 }
 
+/*
 TaskData* td_init(void)
 {
 	TaskData* taskdata = (TaskData*) calloc(sizeof(TaskData), 1);
 	return taskdata;
 }
+*/
 
 Task* t_init(void)
 {
 	Task* task = (Task*) calloc(sizeof(Task), 1);
 	task->prev = NULL;
 	task->next = NULL;
-	task->data = td_init();
+//	task->data = td_init();
 	return task;
 }
 
 void q_push_head(Queue* queue, Task* task)
 {
-	Task* tmp = (Task*) malloc(sizeof(Task));
-	tmp = task;
-
 	pthread_mutex_lock(&queue->mutex);
 	if (queue->head == NULL)
-		queue->tail = tmp;
+		queue->tail = task;
 	else
-		queue->head->prev = tmp;
+		queue->head->prev = task;
 
-	tmp->next = queue->head;
-	queue->head = tmp;
+	task->next = queue->head;
+	queue->head = task;
 	pthread_mutex_unlock(&queue->mutex);
 
 }
 
 void q_push_tail(Queue* queue, Task* task)
 {
-	Task* tmp = (Task*) malloc(sizeof(Task));
-	tmp = task;
-
 	pthread_mutex_lock(&queue->mutex);
 	if (queue->head == NULL)
-		queue->head = tmp;
+		queue->head = task;
 	else
-		queue->tail->next = tmp;
+		queue->tail->next = task;
 
-	tmp->prev = queue->tail;
-	queue->tail = tmp;
+	task->prev = queue->tail;
+	queue->tail = task;
 	pthread_mutex_unlock(&queue->mutex);
 }
 
@@ -70,10 +66,8 @@ void q_pop_head(Queue* queue)
 		queue->head->prev = NULL;
 
 	if (tmp != NULL)
-	{
 		tmp->next = NULL;
-		free(tmp);
-	}
+
 	pthread_mutex_unlock(&queue->mutex);
 }
 
@@ -90,10 +84,8 @@ void q_pop_tail(Queue* queue)
 		queue->tail->next = NULL;
 
 	if (tmp != NULL)
-	{
 		tmp->prev = NULL;
-		free(tmp);
-	}
+
 	pthread_mutex_unlock(&queue->mutex);
 }
 
@@ -113,6 +105,7 @@ void q_insert_sorted(Queue* queue, Task* task, compare_func cmp)
 		q_push_tail(q_new, task);
 		*q_tmp = *q_new;
 		pthread_mutex_unlock(&queue->mutex);
+		free(q_new);
 		return;
 	}
 
@@ -140,6 +133,8 @@ void q_insert_sorted(Queue* queue, Task* task, compare_func cmp)
 
 	*q_tmp = *q_tmphead;
 	pthread_mutex_unlock(&queue->mutex);
+
+	free(q_tmphead);
 }
 
 Task* q_peek_head(Queue* queue)
@@ -155,7 +150,8 @@ Task* q_peek_head(Queue* queue)
 	}
 	else
 	{
-		tmp->data = t->data;
+//		tmp->data = t->data;
+		tmp->value = t->value;
 		pthread_mutex_unlock(&queue->mutex);
 		return tmp;
 	}
@@ -173,7 +169,8 @@ Task* q_peek_tail(Queue* queue)
 	}
 	else
 	{
-		tmp->data = t->data;
+		tmp->value = t->value;
+//		tmp->data = t->data;
 		pthread_mutex_unlock(&queue->mutex);
 		return tmp;
 	}
@@ -186,13 +183,26 @@ int q_isEmpty(Queue* queue)
 	return 0;
 }
 
+void q_free(Queue* queue)
+{
+	if (queue)
+		free(queue);
+}
+
+void t_free(Task* task)
+{
+	if (task)
+		free(task);
+}
+
 void q_showQueue(Queue* queue)
 {
 	Task* help = queue->head;
 
 	while(help != NULL)
 	{
-		printf("%d ", help->data->value);
+//		printf("%d ", help->data->value);
+		printf("%d ", help->value);
 		help = help->next;
 	}
 
@@ -204,8 +214,10 @@ signed int sort_insert(Task* a, Task* b)
 	Task* task_a = a;
 	Task* task_b = b;
 
-	int val_a = task_a->data->value;
-	int val_b = task_b->data->value;
+//	int val_a = task_a->data->value;
+//	int val_b = task_b->data->value;
+	int val_a = task_a->value;
+	int val_b = task_b->value;
 
 	if (val_a < val_b)
 		return -1;

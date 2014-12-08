@@ -7,8 +7,7 @@ static Queue* queue = NULL;
 
 void *test_queue(void *param)
 {
-	int* val = (int*) calloc(sizeof(int), 1);
-	val = param;
+	int* val = param;
 
 	if (!queue)
 		queue = q_init();
@@ -17,11 +16,16 @@ void *test_queue(void *param)
 	Task* task2 = t_init();
 	Task* task3 = t_init();
 	Task* task4 = t_init();
-
+/*
 	task1->data->value = 1;
 	task2->data->value = 3;
 	task3->data->value = 5;
 	task4->data->value = 7;
+*/
+	task1->value = 1;
+	task2->value = 3;
+	task3->value = 5;
+	task4->value = 7;
 
 	printf("(%d)Start filling.\n", *val);
 
@@ -33,7 +37,6 @@ void *test_queue(void *param)
 
 	if (*val == 1 )
 		usleep(100000);
-
 	printf("(%d)Insert sorted: ", *val);
 	q_showQueue(queue);
 		usleep (20000);
@@ -46,7 +49,8 @@ void *test_queue(void *param)
 
 	// Insert element at the right place
 	Task* task5 = t_init();
-	task5->data->value = 6;
+//	task5->data->value = 6;
+	task5->value = 6;
 	q_insert_sorted(queue, task5, sort_insert);
 	printf("(%d)Insert sorted (6): ", *val);
 	q_showQueue(queue);
@@ -60,7 +64,8 @@ void *test_queue(void *param)
 
 	// Append element to the tail
 	Task* task6 = t_init();
-	task6->data->value = 4;
+//	task6->data->value = 4;
+	task6->value = 4;
 	q_push_tail(queue, task6);
 	printf("(%d)Push Tail (4): ", *val);
 	q_showQueue(queue);
@@ -68,7 +73,8 @@ void *test_queue(void *param)
 
 	// Append element to the head
 	Task* task7 = t_init();
-	task7->data->value = 28;
+//	task7->data->value = 28;
+	task7->value = 28;
 	q_push_head(queue, task7);
 	printf("(%d)Push Head (28): ", *val);
 	q_showQueue(queue);
@@ -87,6 +93,18 @@ void *test_queue(void *param)
 	printf("(%d)Get tail -> head: ", *val);
 	q_showQueue(queue);
 		usleep (20000);
+
+	/* free memory */
+	t_free(task1);
+	t_free(task2);
+	t_free(task3);
+	t_free(task4);
+	t_free(task5);
+	t_free(task6);
+	t_free(task7);
+	t_free(task8);
+	t_free(task9);
+	q_free(queue);
 
 	return 0;
 }

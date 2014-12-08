@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =
+CFLAGS = -g
 LIBS = -lpthread
 DEPS = queue.h
 OBJ = main.o queue.o
