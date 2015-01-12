@@ -27,8 +27,9 @@ void q_push_head(Queue* queue, Task* task)
 
 	task->next = queue->head;
 	queue->head = task;
-	pthread_mutex_unlock(&queue->mutex);
+	queue->length++;
 
+	pthread_mutex_unlock(&queue->mutex);
 }
 
 void q_push_tail(Queue* queue, Task* task)
@@ -41,14 +42,16 @@ void q_push_tail(Queue* queue, Task* task)
 
 	task->prev = queue->tail;
 	queue->tail = task;
+	queue->length++;
+
 	pthread_mutex_unlock(&queue->mutex);
 }
 
 void q_pop_head(Queue* queue)
 {
-	Task* tmp;
 	pthread_mutex_lock(&queue->mutex);
-	tmp = queue->head;
+
+	Task* tmp = queue->head;
 	queue->head = queue->head->next;
 
 	if (queue->head == NULL)
@@ -56,17 +59,17 @@ void q_pop_head(Queue* queue)
 	else
 		queue->head->prev = NULL;
 
-	if (tmp != NULL)
-		tmp->next = NULL;
+	queue->length--;
+	t_free(tmp);
 
 	pthread_mutex_unlock(&queue->mutex);
 }
 
 void q_pop_tail(Queue* queue)
 {
-	Task* tmp;
 	pthread_mutex_lock(&queue->mutex);
-	tmp = queue->tail;
+
+	Task* tmp = queue->tail;
 	queue->tail = queue->tail->prev;
 
 	if (queue->tail == NULL)
@@ -74,8 +77,8 @@ void q_pop_tail(Queue* queue)
 	else
 		queue->tail->next = NULL;
 
-	if (tmp != NULL)
-		tmp->prev = NULL;
+	queue->length--;
+	t_free(tmp);
 
 	pthread_mutex_unlock(&queue->mutex);
 }
@@ -88,6 +91,7 @@ Task* q_peek_head(Queue* queue)
 
 	if (t == NULL)
 	{
+		t_free(tmp);
 		pthread_mutex_unlock(&queue->mutex);
 		return NULL;
 	}
@@ -106,6 +110,7 @@ Task* q_peek_tail(Queue* queue)
 	Task* tmp = t_init();
 	if (t == NULL)
 	{
+		t_free(tmp);
 		pthread_mutex_unlock(&queue->mutex);
 		return NULL;
 	}
@@ -119,15 +124,29 @@ Task* q_peek_tail(Queue* queue)
 
 int q_isEmpty(Queue* queue)
 {
-	if (queue->head == NULL && queue->tail == NULL)
+	if (queue->length == 0)
 		return 1;
 	return 0;
+}
+
+int q_length(Queue* queue)
+{
+	return queue->length;
 }
 
 void q_free(Queue* queue)
 {
 	if (queue)
+	{
+		Task* tmp = queue->head;
+		while(tmp)
+		{
+			Task* next = tmp->next;
+			t_free(tmp);
+			tmp = next;
+		}
 		free(queue);
+	}
 }
 
 void t_free(Task* task)
