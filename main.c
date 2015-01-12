@@ -122,7 +122,7 @@ void *run_test(void *param)
 
 	// Get tail do something with it's value
 	Task* task9 = q_peek_head(queue);
-	printf("(%d)Tail value: %d\n", *val, task9->value);
+	printf("(%d)Head value: %d\n", *val, task9->value);
 
 	return 0;
 }
