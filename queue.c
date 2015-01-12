@@ -9,20 +9,11 @@ Queue* q_init(void)
 	return queue;
 }
 
-/*
-TaskData* td_init(void)
-{
-	TaskData* taskdata = (TaskData*) calloc(sizeof(TaskData), 1);
-	return taskdata;
-}
-*/
-
 Task* t_init(void)
 {
 	Task* task = (Task*) calloc(sizeof(Task), 1);
 	task->prev = NULL;
 	task->next = NULL;
-//	task->data = td_init();
 	return task;
 }
 
@@ -89,54 +80,6 @@ void q_pop_tail(Queue* queue)
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-void q_insert_sorted(Queue* queue, Task* task, compare_func cmp)
-{
-	// This only works, if the queue is already sorted
-	// Otherwise it compares the task with the values 
-	// starting from the head
-	pthread_mutex_lock(&queue->mutex);
-
-	Queue* q_tmp = queue;
-	signed int comp;
-
-	if (queue->head == 0)
-	{
-		Queue* q_new = q_init();
-		q_push_tail(q_new, task);
-		*q_tmp = *q_new;
-		pthread_mutex_unlock(&queue->mutex);
-		free(q_new);
-		return;
-	}
-
-	Queue* q_tmphead = q_init();
-
-	comp = (*cmp)(task, q_tmp->head);
-	while ((q_tmp->head) && (comp > 0))
-	{
-		q_push_tail(q_tmphead, q_tmp->head);
-		if (q_tmp->head->next) {
-			q_tmp->head = q_tmp->head->next;
-			comp = (*cmp)(task, q_tmp->head);
-		}
-		else
-			q_tmp->head = NULL;
-	}
-
-	q_push_tail(q_tmphead, task);
-
-	while ((q_tmp->head))
-	{
-		q_push_tail(q_tmphead, q_tmp->head);
-		q_tmp->head = q_tmp->head->next;
-	}
-
-	*q_tmp = *q_tmphead;
-	pthread_mutex_unlock(&queue->mutex);
-
-	free(q_tmphead);
-}
-
 Task* q_peek_head(Queue* queue)
 {
 	pthread_mutex_lock(&queue->mutex);
@@ -150,7 +93,6 @@ Task* q_peek_head(Queue* queue)
 	}
 	else
 	{
-//		tmp->data = t->data;
 		tmp->value = t->value;
 		pthread_mutex_unlock(&queue->mutex);
 		return tmp;
@@ -170,7 +112,6 @@ Task* q_peek_tail(Queue* queue)
 	else
 	{
 		tmp->value = t->value;
-//		tmp->data = t->data;
 		pthread_mutex_unlock(&queue->mutex);
 		return tmp;
 	}
@@ -201,28 +142,9 @@ void q_showQueue(Queue* queue)
 
 	while(help != NULL)
 	{
-//		printf("%d ", help->data->value);
 		printf("%d ", help->value);
 		help = help->next;
 	}
 
 	printf("\n");
-}
-
-signed int sort_insert(Task* a, Task* b)
-{
-	Task* task_a = a;
-	Task* task_b = b;
-
-//	int val_a = task_a->data->value;
-//	int val_b = task_b->data->value;
-	int val_a = task_a->value;
-	int val_b = task_b->value;
-
-	if (val_a < val_b)
-		return -1;
-	else if (val_a > val_b)
-		return 1;
-	else
-		return 0;
 }
