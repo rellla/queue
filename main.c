@@ -1,9 +1,41 @@
+/*
+ * Copyright (c) 2015 Andreas Baierl <ichgeh@imkreisrum.de>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
 #include <pthread.h>
 #include <stdio.h>
 #include <time.h>
 #include "queue.h"
 
 static Queue* queue = NULL;
+
+void q_showQueue(Queue* queue)
+{
+	Task* help = queue->head;
+
+	while(help != NULL)
+	{
+		printf("%d ", help->value);
+		help = help->next;
+	}
+
+	printf("\n");
+}
 
 void *run_test(void *param)
 {
@@ -69,14 +101,16 @@ void *run_test(void *param)
 		usleep (10435);
 
 	// Get head value and push it to the tail
-	Task* task6 = q_peek_head(queue);
+	Task* task6 = t_init();
+	q_peek_head(queue, task6);
 	q_push_tail(queue, task6);
 	printf("(%d)Get head -> tail (%d): ", *val, q_length(queue));
 	q_showQueue(queue);
 		usleep (10337);
 
 	// Get tail value and push it to the head
-	Task* task7 = q_peek_tail(queue);
+	Task* task7 = t_init();
+	q_peek_tail(queue, task7);
 	q_push_head(queue, task7);
 	printf("(%d)Get tail -> head (%d): ", *val, q_length(queue));
 	q_showQueue(queue);
