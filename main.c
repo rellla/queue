@@ -100,21 +100,29 @@ void *run_test(void *param)
 	q_showQueue(queue);
 		usleep (10435);
 
-	// Get head value and push it to the tail
+	// Get head value as a single task and push it to the tail
 	Task* task6 = t_init();
-	q_peek_head(queue, task6);
+	q_extract_head(queue, task6);
 	q_push_tail(queue, task6);
 	printf("(%d)Get head -> tail (%d): ", *val, q_length(queue));
 	q_showQueue(queue);
 		usleep (10337);
 
-	// Get tail value and push it to the head
+	// Get tail value as a single task and push it to the head
 	Task* task7 = t_init();
-	q_peek_tail(queue, task7);
+	q_extract_tail(queue, task7);
 	q_push_head(queue, task7);
 	printf("(%d)Get tail -> head (%d): ", *val, q_length(queue));
 	q_showQueue(queue);
 		usleep (20000);
+
+	// Get tail do something with it's value
+	Task* task8 = q_peek_tail(queue);
+	printf("(%d)Tail value: %d\n", *val, task8->value);
+
+	// Get tail do something with it's value
+	Task* task9 = q_peek_head(queue);
+	printf("(%d)Tail value: %d\n", *val, task9->value);
 
 	return 0;
 }

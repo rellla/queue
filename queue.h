@@ -45,8 +45,10 @@ void q_push_head(Queue* queue, Task* task);
 void q_push_tail(Queue* queue, Task* task);
 void q_pop_head(Queue* queue);
 void q_pop_tail(Queue* queue);
-void q_peek_head(Queue* queue, Task* task);
-void q_peek_tail(Queue* queue, Task* task);
+void q_extract_head(Queue* queue, Task* task);
+void q_extract_tail(Queue* queue, Task* task);
+Task* q_peek_head(Queue* queue);
+Task* q_peek_tail(Queue* queue);
 
 int q_isEmpty(Queue* queue);
 int q_length(Queue* queue);
