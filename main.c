@@ -55,14 +55,14 @@ void *run_test(void *param)
 		printf("(%d)Head value: %d\n", *val, task11->value);
 
 	// Pop first element
-	q_pop_head(queue);
 	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
+	q_pop_head(queue);
 	q_showQueue(queue);
 		usleep (10000);
 
 	// Pop last element
-	q_pop_tail(queue);
 	printf("(%d)Pop Tail (%d): ", *val, q_length(queue));
+	q_pop_tail(queue);
 	q_showQueue(queue);
 		usleep (10040);
 
@@ -109,8 +109,8 @@ void *run_test(void *param)
 		usleep (20000);
 
 	// Pop first element
-	q_pop_head(queue);
 	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
+	q_pop_head(queue);
 	q_showQueue(queue);
 		usleep (10000);
 

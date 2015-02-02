@@ -124,7 +124,9 @@ void q_pop_tail(Queue* queue)
 		queue->length--;
 		t_free(tmp);
 	}
+	else
 		printf("Nothing to pop\n");
+
 	pthread_mutex_unlock(&queue->mutex);
 }
 
