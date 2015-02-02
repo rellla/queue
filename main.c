@@ -44,6 +44,16 @@ void *run_test(void *param)
 	// Fill queue by pushing elements to the end
 	printf("(%d)Start filling.\n", *val);
 
+	// Get tail do something with it's value
+	Task* task10 = q_peek_tail(queue);
+	if (task10)
+		printf("(%d)Head value: %d\n", *val, task10->value);
+
+	// Get head do something with it's value
+	Task* task11 = q_peek_head(queue);
+	if (task11)
+		printf("(%d)Head value: %d\n", *val, task11->value);
+
 	// Pop first element
 	q_pop_head(queue);
 	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
