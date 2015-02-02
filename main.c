@@ -44,6 +44,18 @@ void *run_test(void *param)
 	// Fill queue by pushing elements to the end
 	printf("(%d)Start filling.\n", *val);
 
+	// Pop first element
+	q_pop_head(queue);
+	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
+	q_showQueue(queue);
+		usleep (10000);
+
+	// Pop last element
+	q_pop_tail(queue);
+	printf("(%d)Pop Tail (%d): ", *val, q_length(queue));
+	q_showQueue(queue);
+		usleep (10040);
+
 	// Push to tail
 	Task* task1 = t_init();
 	task1->value = 7;
@@ -131,16 +143,21 @@ void* test_thread()
 {
 	int a = 0;
 	int b = 1;
+	int c = 2;
 
-	pthread_t thread1, thread2;
+	pthread_t thread1, thread2, thread3;
 	pthread_create(&thread1, NULL, run_test, &a);
 	printf("(%d)Thread created\n", a);
 
 	pthread_create(&thread2, NULL, run_test, &b);
 	printf("(%d)Thread created\n", b);
 
+	pthread_create(&thread3, NULL, run_test, &c);
+	printf("(%d)Thread created\n", b);
+
 	pthread_join(thread1, NULL);
 	pthread_join(thread2, NULL);
+	pthread_join(thread3, NULL);
 
 }
 

@@ -85,16 +85,21 @@ void q_pop_head(Queue* queue)
 {
 	pthread_mutex_lock(&queue->mutex);
 
-	Task* tmp = queue->head;
-	queue->head = queue->head->next;
+	if (queue->head)
+	{
+		Task* tmp = queue->head;
+		queue->head = queue->head->next;
 
-	if (queue->head == NULL)
-		queue->tail = NULL;
+		if (queue->head == NULL)
+			queue->tail = NULL;
+		else
+			queue->head->prev = NULL;
+
+		queue->length--;
+		t_free(tmp);
+	}
 	else
-		queue->head->prev = NULL;
-
-	queue->length--;
-	t_free(tmp);
+		printf("Nothing to pop\n");
 
 	pthread_mutex_unlock(&queue->mutex);
 }
@@ -106,17 +111,20 @@ void q_pop_tail(Queue* queue)
 {
 	pthread_mutex_lock(&queue->mutex);
 
-	Task* tmp = queue->tail;
-	queue->tail = queue->tail->prev;
+	if (queue->tail)
+	{
+		Task* tmp = queue->tail;
+		queue->tail = queue->tail->prev;
 
-	if (queue->tail == NULL)
-		queue->head = NULL;
-	else
-		queue->tail->next = NULL;
+		if (queue->tail == NULL)
+			queue->head = NULL;
+		else
+			queue->tail->next = NULL;
 
-	queue->length--;
-	t_free(tmp);
-
+		queue->length--;
+		t_free(tmp);
+	}
+		printf("Nothing to pop\n");
 	pthread_mutex_unlock(&queue->mutex);
 }
 
