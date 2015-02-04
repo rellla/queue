@@ -153,7 +153,7 @@ void* test_single()
 int main(int argc, char *argv[])
 {
 	if (!queue)
-		queue = q_init();
+		queue = q_queue_init();
 
 	if (argc == 2)
 	{
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	q_free(queue);
+	q_queue_free(queue);
 
 	return 0;
 }

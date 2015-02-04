@@ -24,24 +24,24 @@
 
 typedef void* (*action)(void *arg);
 
-typedef struct Task
+typedef struct Node
 {
-	struct Task *prev;
-	struct Task *next;
+	struct Node *prev;
+	struct Node *next;
 	void *data;
-} TASK;
+} NODE;
 
 typedef struct Queue
 {
-	TASK *head;
-	TASK *tail;
+	NODE *head;
+	NODE *tail;
 	int length;
 	pthread_mutex_t mutex;
 } QUEUE;
 
-QUEUE *q_init(void);
-TASK *t_init(void);
-TASK *allocate_task(void *data);
+QUEUE *q_queue_init(void);
+NODE *q_node_init(void);
+NODE *allocate_node(void *data);
 
 void q_push_tail(QUEUE *queue, void *data);
 void q_push_head(QUEUE *queue, void *data);
@@ -55,7 +55,7 @@ void q_extract_head(QUEUE *queue, void *data);
 int q_isEmpty(QUEUE *queue);
 int q_length(QUEUE *queue);
 
-void q_free(QUEUE *queue);
-void t_free(TASK *task);
+void q_queue_free(QUEUE *queue);
+void q_node_free(NODE *node);
 
 void q_recursive(QUEUE *queue, action func);

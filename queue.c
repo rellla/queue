@@ -22,27 +22,27 @@
 /* initialize queue
  *
  */
-QUEUE *q_init(void)
+QUEUE *q_queue_init(void)
 {
-	QUEUE *queue = (QUEUE *) calloc(sizeof(QUEUE), 1);
+	QUEUE *queue = (QUEUE *) calloc(1, sizeof(QUEUE));
 	queue->head = queue->tail = NULL;
 	queue->length = 0;
 	pthread_mutex_init(&queue->mutex, NULL);
 	return queue;
 }
 
-/* allocate task data
+/* allocate node data
  *
  */
-TASK *allocate_task(void *data)
+NODE *allocate_node(void *data)
 {
-	TASK *task = (TASK *)calloc(1, sizeof(TASK));
-	task->next = task->prev = NULL;
-	task->data = data;
-	return (task);
+	NODE *node = (NODE *)calloc(1, sizeof(NODE));
+	node->next = node->prev = NULL;
+	node->data = data;
+	return (node);
 }
 
-/* push task to the tail position
+/* push node to the tail position
  *
  */
 void q_push_tail(QUEUE *queue, void *data)
@@ -52,21 +52,21 @@ void q_push_tail(QUEUE *queue, void *data)
 
 	pthread_mutex_lock(&queue->mutex);
 
-	TASK *task = allocate_task(data);
+	NODE *node = allocate_node(data);
 
 	if (queue->head == NULL)
-		queue->head = task;
+		queue->head = node;
 	else
-		queue->tail->next = task;
+		queue->tail->next = node;
 
-	task->prev = queue->tail;
-	queue->tail = task;
+	node->prev = queue->tail;
+	queue->tail = node;
 	queue->length++;
 
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* push task to the head position
+/* push node to the head position
  *
  */
 void q_push_head(QUEUE *queue, void* data)
@@ -76,21 +76,21 @@ void q_push_head(QUEUE *queue, void* data)
 
 	pthread_mutex_lock(&queue->mutex);
 
-	TASK *task = allocate_task(data);
+	NODE *node = allocate_node(data);
 
 	if (queue->head == NULL)
-		queue->tail = task;
+		queue->tail = node;
 	else
-		queue->head->prev = task;
+		queue->head->prev = node;
 
-	task->next = queue->head;
-	queue->head = task;
+	node->next = queue->head;
+	queue->head = node;
 	queue->length++;
 
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* drop task at head position
+/* drop node at head position
  *
  */
 void q_pop_head(QUEUE *queue)
@@ -102,7 +102,7 @@ void q_pop_head(QUEUE *queue)
 
 	if (queue->head)
 	{
-		TASK *tmp = queue->head;
+		NODE *tmp = queue->head;
 		queue->head = queue->head->next;
 
 		if (queue->head == NULL)
@@ -111,13 +111,13 @@ void q_pop_head(QUEUE *queue)
 			queue->head->prev = NULL;
 
 		queue->length--;
-		t_free(tmp);
+		q_node_free(tmp);
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* drop task at tail position
+/* drop node at tail position
  *
  */
 void q_pop_tail(QUEUE *queue)
@@ -129,7 +129,7 @@ void q_pop_tail(QUEUE *queue)
 
 	if (queue->tail)
 	{
-		TASK* tmp = queue->tail;
+		NODE* tmp = queue->tail;
 		queue->tail = queue->tail->prev;
 
 		if (queue->tail == NULL)
@@ -138,13 +138,13 @@ void q_pop_tail(QUEUE *queue)
 			queue->tail->next = NULL;
 
 		queue->length--;
-		t_free(tmp);
+		q_node_free(tmp);
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* extract task at head position into extra task
+/* extract node at head position into extra node
  *
  */
 void q_extract_head(QUEUE *queue, void *data)
@@ -162,7 +162,7 @@ void q_extract_head(QUEUE *queue, void *data)
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* extract task at tail position into extra task
+/* extract node at tail position into extra node
  *
  */
 void q_extract_tail(QUEUE *queue, void *data)
@@ -180,7 +180,7 @@ void q_extract_tail(QUEUE *queue, void *data)
 	pthread_mutex_unlock(&queue->mutex);
 }
 
-/* find task at head position and return it
+/* find node at head position and return it
  *
  */
 void* q_peek_head(QUEUE *queue)
@@ -189,20 +189,20 @@ void* q_peek_head(QUEUE *queue)
 		return;
 
 	pthread_mutex_lock(&queue->mutex);
-	TASK* task;
+	NODE* node;
 
 	if (queue->head)
-		task = queue->head;
+		node = queue->head;
 
 	pthread_mutex_unlock(&queue->mutex);
 
-	if (task)
-		return task->data;
+	if (node)
+		return node->data;
 	else
 		return NULL;
 }
 
-/* find task at tail position and return it
+/* find node at tail position and return it
  *
  */
 void* q_peek_tail(QUEUE *queue)
@@ -211,15 +211,15 @@ void* q_peek_tail(QUEUE *queue)
 		return;
 
 	pthread_mutex_lock(&queue->mutex);
-	TASK* task;
+	NODE* node;
 
 	if (queue->tail)
-		task = queue->tail;
+		node = queue->tail;
 
 	pthread_mutex_unlock(&queue->mutex);
 
-	if (task)
-		return task->data;
+	if (node)
+		return node->data;
 	else
 		return NULL;
 }
@@ -242,20 +242,20 @@ int q_length(QUEUE *queue)
 	return queue->length;
 }
 
-/* free queue and all tasks
+/* free queue and all nodes
  *
  */
-void q_free(QUEUE *queue)
+void q_queue_free(QUEUE *queue)
 {
 	if (queue)
 	{
 		pthread_mutex_lock(&queue->mutex);
 
-		TASK *tmp = queue->head;
+		NODE *tmp = queue->head;
 		while(tmp)
 		{
-			TASK *next = tmp->next;
-			t_free(tmp);
+			NODE *next = tmp->next;
+			q_node_free(tmp);
 			tmp = next;
 		}
 		pthread_mutex_unlock(&queue->mutex);
@@ -264,16 +264,16 @@ void q_free(QUEUE *queue)
 	}
 }
 
-/* free task and allocated data
+/* free node and allocated data
  *
  */
-void t_free(TASK *task)
+void q_node_free(NODE *node)
 {
-	if (task)
+	if (node)
 	{
-		if (task->data)
-			free(task->data);
-		free(task);
+		if (node->data)
+			free(node->data);
+		free(node);
 	}
 }
 
@@ -286,12 +286,12 @@ void q_recursive(QUEUE *queue, action func)
 	if (queue)
 	{
 		pthread_mutex_lock(&queue->mutex);
-		TASK *task = queue->head;
+		NODE *node = queue->head;
 
-		while(task != NULL)
+		while(node != NULL)
 		{
-			func(task->data);
-			task = task->next;
+			func(node->data);
+			node = node->next;
 		}
 		pthread_mutex_unlock(&queue->mutex);
 	}
