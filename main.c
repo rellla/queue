@@ -48,21 +48,21 @@ void *run_test(void *param)
 	printf("(%d)Start filling.\n", *val);
 
 	// Push to tail
-	example_t *data1 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data1 = (example_t *)calloc(1, sizeof(example_t));
 	data1->value = 2;
 	q_push_tail(queue, data1);
 	printf("(%d)Push Tail (V%d, L%d)\n", *val, data1->value, q_length(queue));
 	showQueue(queue);
 
 	// Push to tail
-	example_t *data2 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data2 = (example_t *)calloc(1, sizeof(example_t));
 	data2->value = 4;
 	q_push_tail(queue, data2);
 	printf("(%d)Push Tail (V%d, L%d)\n", *val, data2->value, q_length(queue));
 	showQueue(queue);
 
 	// Push to head
-	example_t *data3 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data3 = (example_t *)calloc(1, sizeof(example_t));
 	data3->value = 5;
 	q_push_head(queue, data3);
 	printf("(%d)Push Head (V%d, L%d)\n", *val, data3->value, q_length(queue));
@@ -74,14 +74,14 @@ void *run_test(void *param)
 	showQueue(queue);
 
 	// Push to head
-	example_t *data4 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data4 = (example_t *)calloc(1, sizeof(example_t));
 	data4->value = 3;
 	q_push_head(queue, data4);
 	printf("(%d)Push Head (V%d, L%d)\n", *val, data4->value, q_length(queue));
 	showQueue(queue);
 
 	// Create new data with head value
-	example_t *data8 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data8 = (example_t *)calloc(1, sizeof(example_t));
 	q_extract_head(queue, data8);
 	printf("Extract Head Value: %d\n", data8->value);
 	// Push previous to the end
@@ -90,7 +90,7 @@ void *run_test(void *param)
 	showQueue(queue);
 
 	// Push to tail
-	example_t *data5 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data5 = (example_t *)calloc(1, sizeof(example_t));
 	data5->value = 6;
 	q_push_tail(queue, data5);
 	printf("(%d)Push Tail (V%d, L%d)\n", *val, data5->value, q_length(queue));
@@ -102,7 +102,7 @@ void *run_test(void *param)
 	showQueue(queue);
 
 	// Create new data with tail value
-	example_t *data9 = (example_t *)calloc(sizeof(example_t), 1);
+	example_t *data9 = (example_t *)calloc(1, sizeof(example_t));
 	q_extract_tail(queue, data9);
 	printf("Extract Head Value: %d\n", data9->value);
 	// Push previous to the end
