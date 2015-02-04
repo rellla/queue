@@ -22,18 +22,22 @@
 #include <time.h>
 #include "queue.h"
 
-static Queue* queue = NULL;
+static QUEUE *queue;
 
-void q_showQueue(Queue* queue)
+typedef struct example {
+	int value;
+}example_t;
+
+void *listData(void *data)
 {
-	Task* help = queue->head;
+	example_t *t = (example_t *)data;
+	printf("%d ", t->value);
+}
 
-	while(help != NULL)
-	{
-		printf("%d ", help->value);
-		help = help->next;
-	}
-
+void *showQueue(void *data)
+{
+	printf("Queue: ");
+	q_recursive(queue, listData);
 	printf("\n");
 }
 
@@ -41,110 +45,80 @@ void *run_test(void *param)
 {
 	int* val = param;
 
-	// Fill queue by pushing elements to the end
 	printf("(%d)Start filling.\n", *val);
 
-	// Get tail do something with it's value
-	Task* task10 = q_peek_tail(queue);
-	if (task10)
-		printf("(%d)Head value: %d\n", *val, task10->value);
+	// Push to tail
+	example_t *data1 = (example_t *)calloc(sizeof(example_t), 1);
+	data1->value = 2;
+	q_push_tail(queue, data1);
+	printf("(%d)Push Tail (V%d, L%d)\n", *val, data1->value, q_length(queue));
+	showQueue(queue);
 
-	// Get head do something with it's value
-	Task* task11 = q_peek_head(queue);
-	if (task11)
-		printf("(%d)Head value: %d\n", *val, task11->value);
+	// Push to tail
+	example_t *data2 = (example_t *)calloc(sizeof(example_t), 1);
+	data2->value = 4;
+	q_push_tail(queue, data2);
+	printf("(%d)Push Tail (V%d, L%d)\n", *val, data2->value, q_length(queue));
+	showQueue(queue);
+
+	// Push to head
+	example_t *data3 = (example_t *)calloc(sizeof(example_t), 1);
+	data3->value = 5;
+	q_push_head(queue, data3);
+	printf("(%d)Push Head (V%d, L%d)\n", *val, data3->value, q_length(queue));
+	showQueue(queue);
 
 	// Pop first element
-	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
 	q_pop_head(queue);
-	q_showQueue(queue);
-		usleep (10000);
+	printf("(%d)Pop Head (L%d)\n", *val, q_length(queue));
+	showQueue(queue);
 
-	// Pop last element
-	printf("(%d)Pop Tail (%d): ", *val, q_length(queue));
-	q_pop_tail(queue);
-	q_showQueue(queue);
-		usleep (10040);
+	// Push to head
+	example_t *data4 = (example_t *)calloc(sizeof(example_t), 1);
+	data4->value = 3;
+	q_push_head(queue, data4);
+	printf("(%d)Push Head (V%d, L%d)\n", *val, data4->value, q_length(queue));
+	showQueue(queue);
 
-	// Push to tail
-	Task* task1 = t_init();
-	task1->value = 7;
-	q_push_tail(queue, task1);
-	printf("(%d)Push Tail (%d, %d): ", *val, task1->value, q_length(queue));
-	q_showQueue(queue);
-		usleep (20000);
-
-	// Push to tail
-	Task* task2 = t_init();
-	task2->value = 1;
-	q_push_tail(queue, task2);
-	printf("(%d)Push Tail (%d, %d): ", *val, task2->value, q_length(queue));
-	q_showQueue(queue);
-		usleep (20000);
-
-	// Wait a bit in the second thread
-	if (*val == 1 )
-		usleep(100000);
+	// Create new data with head value
+	example_t *data8 = (example_t *)calloc(sizeof(example_t), 1);
+	q_extract_head(queue, data8);
+	printf("Extract Head Value: %d\n", data8->value);
+	// Push previous to the end
+	q_push_tail(queue, data8);
+	printf("(%d)Push Tail (V%d, L%d)\n", *val, data8->value, q_length(queue));
+	showQueue(queue);
 
 	// Push to tail
-	Task* task3 = t_init();
-	task3->value = 5;
-	q_push_tail(queue, task3);
-	printf("(%d)Push Tail (%d, %d): ", *val, task3->value, q_length(queue));
-	q_showQueue(queue);
-		usleep (20000);
+	example_t *data5 = (example_t *)calloc(sizeof(example_t), 1);
+	data5->value = 6;
+	q_push_tail(queue, data5);
+	printf("(%d)Push Tail (V%d, L%d)\n", *val, data5->value, q_length(queue));
+	showQueue(queue);
 
 	// Pop last element
 	q_pop_tail(queue);
-	printf("(%d)Pop Tail (%d): ", *val, q_length(queue));
-	q_showQueue(queue);
-		usleep (10040);
+	printf("(%d)Pop Tail (L%d)\n", *val, q_length(queue));
+	showQueue(queue);
 
-	// Push to tail
-	Task* task4 = t_init();
-	task4->value = 3;
-	q_push_tail(queue, task4);
-	printf("(%d)Push Tail (%d, %d): ", *val, task4->value, q_length(queue));
-	q_showQueue(queue);
-		usleep (20000);
+	// Create new data with tail value
+	example_t *data9 = (example_t *)calloc(sizeof(example_t), 1);
+	q_extract_tail(queue, data9);
+	printf("Extract Head Value: %d\n", data9->value);
+	// Push previous to the end
+	q_push_tail(queue, data9);
+	printf("(%d)Push Tail (V%d, L%d)\n", *val, data9->value, q_length(queue));
+	showQueue(queue);
 
-	// Pop first element
-	printf("(%d)Pop Head (%d): ", *val, q_length(queue));
-	q_pop_head(queue);
-	q_showQueue(queue);
-		usleep (10000);
+	// Search for head and return it
+	example_t *data6 = q_peek_head(queue);
+	if (data6)
+		printf("(%d)Head value: V%d\n", *val, data6->value);
 
-	// Append element to the head
-	Task* task5 = t_init();
-	task5->value = 28;
-	q_push_head(queue, task5);
-	printf("(%d)Push Head (28, %d): ", *val, q_length(queue));
-	q_showQueue(queue);
-		usleep (10435);
-
-	// Get head value as a single task and push it to the tail
-	Task* task6 = t_init();
-	q_extract_head(queue, task6);
-	q_push_tail(queue, task6);
-	printf("(%d)Get head -> tail (%d): ", *val, q_length(queue));
-	q_showQueue(queue);
-		usleep (10337);
-
-	// Get tail value as a single task and push it to the head
-	Task* task7 = t_init();
-	q_extract_tail(queue, task7);
-	q_push_head(queue, task7);
-	printf("(%d)Get tail -> head (%d): ", *val, q_length(queue));
-	q_showQueue(queue);
-		usleep (20000);
-
-	// Get tail do something with it's value
-	Task* task8 = q_peek_tail(queue);
-	printf("(%d)Tail value: %d\n", *val, task8->value);
-
-	// Get tail do something with it's value
-	Task* task9 = q_peek_head(queue);
-	printf("(%d)Head value: %d\n", *val, task9->value);
+	// Search for tail and return it
+	example_t *data7 = q_peek_tail(queue);
+	if (data7)
+		printf("(%d)Tail value: V%d\n", *val, data7->value);
 
 	return 0;
 }
@@ -168,14 +142,12 @@ void* test_thread()
 	pthread_join(thread1, NULL);
 	pthread_join(thread2, NULL);
 	pthread_join(thread3, NULL);
-
 }
 
 void* test_single()
 {
 	int a = 0;
 	run_test(&a);
-
 }
 
 int main(int argc, char *argv[])

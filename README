@@ -3,7 +3,5 @@ Simple Queue written in C
 This Queue may include all necessary methods to do the queue handling within libvdpau-sunxi. 
 We will see ...
 
-All error handling functions are still missing and will cause the queue break in some situations.
-
 simply build it:
 make

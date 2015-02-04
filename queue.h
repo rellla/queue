@@ -22,36 +22,40 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef void* (*action)(void *arg);
+
 typedef struct Task
 {
-	struct Task*	prev;
-	struct Task*	next;
-	int value;
-} Task;
-
+	struct Task *prev;
+	struct Task *next;
+	void *data;
+} TASK;
 
 typedef struct Queue
 {
-	struct Task* head;
-	struct Task* tail;
+	TASK *head;
+	TASK *tail;
 	int length;
 	pthread_mutex_t mutex;
-} Queue;
+} QUEUE;
 
-Queue* q_init(void);
-Task* t_init(void);
+QUEUE *q_init(void);
+TASK *t_init(void);
+TASK *allocate_task(void *data);
 
-void q_push_head(Queue* queue, Task* task);
-void q_push_tail(Queue* queue, Task* task);
-void q_pop_head(Queue* queue);
-void q_pop_tail(Queue* queue);
-void q_extract_head(Queue* queue, Task* task);
-void q_extract_tail(Queue* queue, Task* task);
-Task* q_peek_head(Queue* queue);
-Task* q_peek_tail(Queue* queue);
+void q_push_tail(QUEUE *queue, void *data);
+void q_push_head(QUEUE *queue, void *data);
+void q_pop_tail(QUEUE *queue);
+void q_pop_head(QUEUE *queue);
+void* q_peek_tail(QUEUE *queue);
+void* q_peek_head(QUEUE *queue);
+void q_extract_tail(QUEUE *queue, void *data);
+void q_extract_head(QUEUE *queue, void *data);
 
-int q_isEmpty(Queue* queue);
-int q_length(Queue* queue);
+int q_isEmpty(QUEUE *queue);
+int q_length(QUEUE *queue);
 
-void q_free(Queue* queue);
-void t_free(Task* task);
+void q_free(QUEUE *queue);
+void t_free(TASK *task);
+
+void q_recursive(QUEUE *queue, action func);
