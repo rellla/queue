@@ -90,6 +90,56 @@ void q_push_head(QUEUE *queue, void* data)
 	pthread_mutex_unlock(&queue->mutex);
 }
 
+/* fill queue sorted
+ *
+ */
+void q_insert_sorted(QUEUE *queue, void* data, action2 func)
+{
+
+	if (!queue || !data)
+		return;
+
+	pthread_mutex_lock(&queue->mutex);
+	NODE *node = queue->head;
+	NODE *node_new = allocate_node(data);
+
+	while(node && (func(node->data, node_new->data) < 0))
+		node = node->next;
+
+	if (node == queue->head)
+	{
+		if (queue->head == NULL)
+			queue->tail = node_new;
+		else
+			queue->head->prev = node_new;
+
+		node_new->next = queue->head;
+		queue->head = node_new;
+	}
+	else if (node == NULL)
+	{
+		if (queue->head == NULL)
+			queue->head = node_new;
+		else
+			queue->tail->next = node_new;
+
+		node_new->prev = queue->tail;
+		queue->tail = node_new;
+	}
+	else
+	{
+		node_new->prev = node->prev;
+		node_new->next = node;
+		node->prev = node_new;
+		if (node_new->prev)
+			node_new->prev->next = node_new;
+	}
+
+	queue->length++;
+
+	pthread_mutex_unlock(&queue->mutex);
+}
+
 /* drop node at head position
  *
  */

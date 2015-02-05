@@ -34,6 +34,20 @@ void *listData(void *data)
 	printf("%d ", t->value);
 }
 
+int compare_func(void *a, void *b)
+{
+	example_t *data_a = a;
+	example_t *data_b = b;
+	int ret = 0;
+
+	if (data_a->value < data_b->value)
+		ret = -1;
+	else if (data_a->value > data_b->value)
+		ret = 1;
+
+	return ret;
+}
+
 void *showQueue(void *data)
 {
 	printf("Queue: ");
@@ -114,6 +128,13 @@ void *run_test(void *param)
 	// Push previous to the end
 	q_push_tail(queue, data9);
 	printf("(%d)Push Tail (V%d, L%d)\n", *val, data9->value, q_length(queue));
+	showQueue(queue);
+
+	// Insert Sorted
+	example_t *data11 = (example_t *)calloc(1, sizeof(example_t));
+	data11->value = 1;
+	printf("(%d)Insert Sorted (V%d, L%d)\n", *val, data11->value, q_length(queue));
+	q_insert_sorted(queue, data11, compare_func);
 	showQueue(queue);
 
 	// Search for head and return it

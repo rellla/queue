@@ -23,6 +23,7 @@
 #include <string.h>
 
 typedef void* (*action)(void *arg);
+typedef int (*action2)(void *arg1, void *arg2);
 
 typedef struct Node
 {
@@ -51,6 +52,7 @@ void* q_peek_tail(QUEUE *queue);
 void* q_peek_head(QUEUE *queue);
 void q_extract_tail(QUEUE *queue, void *data);
 void q_extract_head(QUEUE *queue, void *data);
+void q_insert_sorted(QUEUE *queue, void *data, action2 func);
 
 int q_isEmpty(QUEUE *queue);
 int q_length(QUEUE *queue);
