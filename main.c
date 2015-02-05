@@ -68,6 +68,11 @@ void *run_test(void *param)
 	printf("(%d)Push Head (V%d, L%d)\n", *val, data3->value, q_length(queue));
 	showQueue(queue);
 
+	// Create new data with head value, pop the head and do something with it
+	example_t *data10 = (example_t *)calloc(1, sizeof(example_t));
+	q_extract_head(queue, data10);
+	printf("Extract Head Value: %d\n", data10->value);
+
 	// Pop first element
 	q_pop_head(queue);
 	printf("(%d)Pop Head (L%d)\n", *val, q_length(queue));
@@ -80,10 +85,11 @@ void *run_test(void *param)
 	printf("(%d)Push Head (V%d, L%d)\n", *val, data4->value, q_length(queue));
 	showQueue(queue);
 
-	// Create new data with head value
+	// Create new data with head value, pop the head and do something with it
 	example_t *data8 = (example_t *)calloc(1, sizeof(example_t));
 	q_extract_head(queue, data8);
 	printf("Extract Head Value: %d\n", data8->value);
+	q_pop_head(queue);
 	// Push previous to the end
 	q_push_tail(queue, data8);
 	printf("(%d)Push Tail (V%d, L%d)\n", *val, data8->value, q_length(queue));
@@ -119,6 +125,8 @@ void *run_test(void *param)
 	example_t *data7 = q_peek_tail(queue);
 	if (data7)
 		printf("(%d)Tail value: V%d\n", *val, data7->value);
+
+	free(data10);
 
 	return 0;
 }
