@@ -348,10 +348,9 @@ qStatus q_node_free(NODE *node)
 		return Q_ERROR;
 
 	if (node->data)
-	{
 		free(node->data);
-		free(node);
-	}
+
+	free(node);
 
 	return Q_SUCCESS;
 }
