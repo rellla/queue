@@ -54,8 +54,8 @@ NODE *allocate_node(void *data);
 
 qStatus q_push_tail(QUEUE *queue, void *data);
 qStatus q_push_head(QUEUE *queue, void *data);
-qStatus q_pop_tail(QUEUE *queue);
-qStatus q_pop_head(QUEUE *queue);
+void *q_pop_tail(QUEUE *queue);
+void *q_pop_head(QUEUE *queue);
 qStatus q_peek_tail(QUEUE *queue, void **data);
 qStatus q_peek_head(QUEUE *queue, void **data);
 qStatus q_extract_tail(QUEUE *queue, void *data, int size);
@@ -66,6 +66,6 @@ qStatus q_isEmpty(QUEUE *queue);
 int q_length(QUEUE *queue);
 
 qStatus q_queue_free(QUEUE *queue);
-qStatus q_node_free(NODE *node);
+qStatus q_node_free(NODE *node, int data_free);
 
 qStatus q_recursive(QUEUE *queue, action func);

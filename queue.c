@@ -159,15 +159,17 @@ qStatus q_insert_sorted(QUEUE *queue, void* data, action2 func)
 /* drop node at head position
  *
  */
-qStatus q_pop_head(QUEUE *queue)
+void *q_pop_head(QUEUE *queue)
 {
 	if (!queue)
-		return Q_ERROR;
+		return NULL;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->head)
 	{
+		void *data = queue->head->data;
+
 		NODE *tmp = queue->head;
 		queue->head = queue->head->next;
 
@@ -177,28 +179,30 @@ qStatus q_pop_head(QUEUE *queue)
 			queue->head->prev = NULL;
 
 		queue->length--;
-		q_node_free(tmp);
+		q_node_free(tmp, 0);
 
 		pthread_mutex_unlock(&queue->mutex);
-		return Q_SUCCESS;
+		return data;
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
-	return Q_EMPTY_NODE;
+	return NULL;
 }
 
 /* drop node at tail position
  *
  */
-qStatus q_pop_tail(QUEUE *queue)
+void *q_pop_tail(QUEUE *queue)
 {
 	if (!queue)
-		return Q_ERROR;
+		return NULL;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->tail)
 	{
+		void *data = queue->tail->data;
+
 		NODE* tmp = queue->tail;
 		queue->tail = queue->tail->prev;
 
@@ -208,14 +212,14 @@ qStatus q_pop_tail(QUEUE *queue)
 			queue->tail->next = NULL;
 
 		queue->length--;
-		q_node_free(tmp);
+		q_node_free(tmp, 0);
 
 		pthread_mutex_unlock(&queue->mutex);
-		return Q_SUCCESS;
+		return data;
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
-	return Q_EMPTY_NODE;
+	return NULL;
 }
 
 /* extract node at head position into extra node
@@ -329,7 +333,7 @@ qStatus q_queue_free(QUEUE *queue)
 	while(tmp)
 	{
 		NODE *next = tmp->next;
-		q_node_free(tmp);
+		q_node_free(tmp, 1);
 		tmp = next;
 	}
 	pthread_mutex_unlock(&queue->mutex);
@@ -342,19 +346,18 @@ qStatus q_queue_free(QUEUE *queue)
 /* free node and allocated data
  *
  */
-qStatus q_node_free(NODE *node)
+qStatus q_node_free(NODE *node, int data_free)
 {
 	if (!node)
 		return Q_ERROR;
 
-	if (node->data)
+	if (data_free && node->data)
 		free(node->data);
 
 	free(node);
 
 	return Q_SUCCESS;
 }
-
 
 /* do something recursive with the queue's data
  *
