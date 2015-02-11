@@ -178,16 +178,13 @@ qStatus q_pop_head(QUEUE *queue)
 
 		queue->length--;
 		q_node_free(tmp);
-		pthread_mutex_unlock(&queue->mutex);
 
+		pthread_mutex_unlock(&queue->mutex);
 		return Q_SUCCESS;
 	}
-	else
-	{
-	pthread_mutex_unlock(&queue->mutex);
 
-		return Q_EMPTY_NODE;
-	}
+	pthread_mutex_unlock(&queue->mutex);
+	return Q_EMPTY_NODE;
 }
 
 /* drop node at tail position
@@ -212,11 +209,13 @@ qStatus q_pop_tail(QUEUE *queue)
 
 		queue->length--;
 		q_node_free(tmp);
+
+		pthread_mutex_unlock(&queue->mutex);
+		return Q_SUCCESS;
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
-
-	return Q_SUCCESS;
+	return Q_EMPTY_NODE;
 }
 
 /* extract node at head position into extra node
@@ -225,16 +224,16 @@ qStatus q_pop_tail(QUEUE *queue)
 qStatus q_extract_head(QUEUE *queue, void *data, int size)
 {
 	if (!queue || !data)
-		return;
+		return Q_ERROR;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->head)
 		memcpy(data, queue->head->data, size);
-	else
-		data = NULL;
 
 	pthread_mutex_unlock(&queue->mutex);
+
+	return Q_SUCCESS;
 }
 
 /* extract node at tail position into extra node
@@ -243,16 +242,16 @@ qStatus q_extract_head(QUEUE *queue, void *data, int size)
 qStatus q_extract_tail(QUEUE *queue, void *data, int size)
 {
 	if (!queue || !data)
-		return;
+		return Q_ERROR;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->tail)
 		memcpy(data, queue->tail->data, size);
-	else
-		data = NULL;
 
 	pthread_mutex_unlock(&queue->mutex);
+
+	return Q_SUCCESS;
 }
 
 /* find node at head position and return it
@@ -260,22 +259,20 @@ qStatus q_extract_tail(QUEUE *queue, void *data, int size)
  */
 qStatus q_peek_head(QUEUE *queue, void **data)
 {
-	qStatus err = Q_ERROR;
-
 	if (!queue)
-		return err;
+		return Q_ERROR;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->head)
 	{
 		*data = queue->head->data;
-		err = Q_SUCCESS;
+		pthread_mutex_unlock(&queue->mutex);
+		return Q_SUCCESS;
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
-
-	return err;
+	return Q_ERROR;
 }
 
 /* find node at tail position and return it
@@ -283,32 +280,31 @@ qStatus q_peek_head(QUEUE *queue, void **data)
  */
 qStatus q_peek_tail(QUEUE *queue, void **data)
 {
-	qStatus err = Q_ERROR;
-
 	if (!queue)
-		return err;
+		return Q_ERROR;
 
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->tail->data)
 	{
 		*data = queue->tail->data;
-		err = Q_SUCCESS;
+		pthread_mutex_unlock(&queue->mutex);
+		return Q_SUCCESS;
 	}
 
 	pthread_mutex_unlock(&queue->mutex);
-
-	return err;
+	return Q_ERROR;
 }
 
 /* check, if queue is empty
  *
  */
-int q_isEmpty(QUEUE *queue)
+qStatus q_isEmpty(QUEUE *queue)
 {
 	if (queue->length == 0)
-		return 1;
-	return 0;
+		return Q_EMPTY;
+
+	return Q_SUCCESS;
 }
 
 /* return the length of the queue

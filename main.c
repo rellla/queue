@@ -55,11 +55,20 @@ void *showQueue(void *data)
 	printf("\n");
 }
 
+void *check_if_empty(QUEUE *queue)
+{
+	if (q_isEmpty(queue))
+		printf("Queue is empty...\n");
+	else
+		printf("Queue is filled...\n");
+}
+
 void *run_test(void *param)
 {
 	int* val = param;
 
 	printf("(%d)Start filling.\n", *val);
+	check_if_empty(queue);
 
 	// Push to tail
 	example_t *data1 = (example_t *)calloc(1, sizeof(example_t));
@@ -192,6 +201,8 @@ void *run_test(void *param)
 
 	printf("(%d)Extracted value outside queue: V%Lf\n", *val, data10->value);
 	free(data10);
+
+	check_if_empty(queue);
 
 	return 0;
 }

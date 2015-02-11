@@ -29,6 +29,7 @@ typedef enum
 {
 	Q_SUCCESS,
 	Q_EMPTY_NODE,
+	Q_EMPTY,
 	Q_ERROR
 } qStatus;
 
@@ -61,7 +62,7 @@ qStatus q_extract_tail(QUEUE *queue, void *data, int size);
 qStatus q_extract_head(QUEUE *queue, void *data, int size);
 qStatus q_insert_sorted(QUEUE *queue, void *data, action2 func);
 
-int q_isEmpty(QUEUE *queue);
+qStatus q_isEmpty(QUEUE *queue);
 int q_length(QUEUE *queue);
 
 qStatus q_queue_free(QUEUE *queue);
