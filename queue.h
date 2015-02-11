@@ -50,8 +50,8 @@ void q_pop_tail(QUEUE *queue);
 void q_pop_head(QUEUE *queue);
 void* q_peek_tail(QUEUE *queue);
 void* q_peek_head(QUEUE *queue);
-void q_extract_tail(QUEUE *queue, void *data);
-void q_extract_head(QUEUE *queue, void *data);
+void q_extract_tail(QUEUE *queue, void *data, int size);
+void q_extract_head(QUEUE *queue, void *data, int size);
 void q_insert_sorted(QUEUE *queue, void *data, action2 func);
 
 int q_isEmpty(QUEUE *queue);

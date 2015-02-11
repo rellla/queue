@@ -197,7 +197,7 @@ void q_pop_tail(QUEUE *queue)
 /* extract node at head position into extra node
  *
  */
-void q_extract_head(QUEUE *queue, void *data)
+void q_extract_head(QUEUE *queue, void *data, int size)
 {
 	if (!queue || !data)
 		return;
@@ -205,7 +205,7 @@ void q_extract_head(QUEUE *queue, void *data)
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->head)
-		memcpy(data, queue->head->data, sizeof(*data));
+		memcpy(data, queue->head->data, size);
 	else
 		data = NULL;
 
@@ -215,7 +215,7 @@ void q_extract_head(QUEUE *queue, void *data)
 /* extract node at tail position into extra node
  *
  */
-void q_extract_tail(QUEUE *queue, void *data)
+void q_extract_tail(QUEUE *queue, void *data, int size)
 {
 	if (!queue || !data)
 		return;
@@ -223,7 +223,7 @@ void q_extract_tail(QUEUE *queue, void *data)
 	pthread_mutex_lock(&queue->mutex);
 
 	if (queue->tail)
-		memcpy(data, queue->tail->data, sizeof(*data));
+		memcpy(data, queue->tail->data, size);
 	else
 		data = NULL;
 
