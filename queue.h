@@ -25,6 +25,13 @@
 typedef void* (*action)(void *arg);
 typedef int (*action2)(void *arg1, void *arg2);
 
+typedef enum
+{
+	Q_SUCCESS,
+	Q_EMPTY_NODE,
+	Q_ERROR
+} qStatus;
+
 typedef struct Node
 {
 	struct Node *prev;
@@ -44,20 +51,20 @@ QUEUE *q_queue_init(void);
 NODE *q_node_init(void);
 NODE *allocate_node(void *data);
 
-void q_push_tail(QUEUE *queue, void *data);
-void q_push_head(QUEUE *queue, void *data);
-void q_pop_tail(QUEUE *queue);
-void q_pop_head(QUEUE *queue);
-void* q_peek_tail(QUEUE *queue);
-void* q_peek_head(QUEUE *queue);
-void q_extract_tail(QUEUE *queue, void *data, int size);
-void q_extract_head(QUEUE *queue, void *data, int size);
-void q_insert_sorted(QUEUE *queue, void *data, action2 func);
+qStatus q_push_tail(QUEUE *queue, void *data);
+qStatus q_push_head(QUEUE *queue, void *data);
+qStatus q_pop_tail(QUEUE *queue);
+qStatus q_pop_head(QUEUE *queue);
+qStatus q_peek_tail(QUEUE *queue, void **data);
+qStatus q_peek_head(QUEUE *queue, void **data);
+qStatus q_extract_tail(QUEUE *queue, void *data, int size);
+qStatus q_extract_head(QUEUE *queue, void *data, int size);
+qStatus q_insert_sorted(QUEUE *queue, void *data, action2 func);
 
 int q_isEmpty(QUEUE *queue);
 int q_length(QUEUE *queue);
 
-void q_queue_free(QUEUE *queue);
-void q_node_free(NODE *node);
+qStatus q_queue_free(QUEUE *queue);
+qStatus q_node_free(NODE *node);
 
-void q_recursive(QUEUE *queue, action func);
+qStatus q_recursive(QUEUE *queue, action func);

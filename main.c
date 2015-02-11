@@ -50,7 +50,7 @@ int compare_func(void *a, void *b)
 
 void *showQueue(void *data)
 {
-	printf("Queue: ");
+	printf("Queue (L%d): ", q_length(queue));
 	q_recursive(queue, listData);
 	printf("\n");
 }
@@ -64,94 +64,133 @@ void *run_test(void *param)
 	// Push to tail
 	example_t *data1 = (example_t *)calloc(1, sizeof(example_t));
 	data1->value = 2;
-	q_push_tail(queue, data1);
-	printf("(%d)Push Tail (V%Lf, L%d)\n", *val, data1->value, q_length(queue));
+	if(!q_push_tail(queue, data1))
+		printf("(%d)Push %Lf to tail\n", *val, data1->value);
+	else
+		free(data1);
+
 	showQueue(queue);
 
 	// Push to tail
 	example_t *data2 = (example_t *)calloc(1, sizeof(example_t));
 	data2->value = 4;
-	q_push_tail(queue, data2);
-	printf("(%d)Push Tail (V%Lf, L%d)\n", *val, data2->value, q_length(queue));
+	if(!q_push_tail(queue, data2))
+		printf("(%d)Push %Lf to tail\n", *val, data2->value);
+	else
+		free(data2);
+
 	showQueue(queue);
+
 
 	// Push to head
 	example_t *data3 = (example_t *)calloc(1, sizeof(example_t));
 	data3->value = 5;
-	q_push_head(queue, data3);
-	printf("(%d)Push Head (V%d, L%d)\n", *val, data3->value, q_length(queue));
-	showQueue(queue);
+	if(!q_push_head(queue, data3))
+		printf("(%d)Push %Lf to head\n", *val, data3->value);
+	else
+		free(data3);
 
-	// Search for head and return it
-	example_t *data40 = q_peek_head(queue);
-	if (data40)
-		printf("(%d)Head value: V%Lf\n", *val, data40->value);
+	showQueue(queue);
 
 	// Create new data with head value, pop the head and do something with it
 	example_t *data10 = (example_t *)calloc(1, sizeof(example_t));
-	q_extract_head(queue, data10, sizeof(example_t));
-	printf("Extract Head Value: V%Lf\n", data10->value);
+	if (!q_extract_head(queue, data10, sizeof(example_t)))
+		printf("(%d)Extract head value: %Lf\n", *val, data10->value);
+	else
+		free(data10);
 
 	// Pop first element
-	q_pop_head(queue);
-	printf("(%d)Pop Head (L%d)\n", *val, q_length(queue));
+	if(!q_pop_head(queue))
+		printf("(%d)Pop head\n", *val);
+	else
+		printf("(%d)No head value\n", *val);
+
 	showQueue(queue);
 
 	// Push to head
 	example_t *data4 = (example_t *)calloc(1, sizeof(example_t));
 	data4->value = 3;
-	q_push_head(queue, data4);
-	printf("(%d)Push Head (V%Lf, L%d)\n", *val, data4->value, q_length(queue));
+	if(!q_push_head(queue, data4))
+		printf("(%d)Push %Lf to head\n", *val, data4->value);
+	else
+		free(data4);
+
 	showQueue(queue);
+
 
 	// Create new data with head value, pop the head and do something with it
 	example_t *data8 = (example_t *)calloc(1, sizeof(example_t));
-	q_extract_head(queue, data8, sizeof(example_t));
-	printf("Extract Head Value: V%Lf\n", data8->value);
-	q_pop_head(queue);
-	// Push previous to the end
-	q_push_tail(queue, data8);
-	printf("(%d)Push Tail (V%Lf, L%d)\n", *val, data8->value, q_length(queue));
+	if (!q_extract_head(queue, data8, sizeof(example_t)))
+	{
+		printf("(%d)Extract head value: %Lf\n", *val, data8->value);
+		// Push previous to the end
+		if(!q_push_tail(queue, data8))
+			printf("(%d)Push head (%Lf) to tail\n", *val, data8->value);
+		else
+			free(data8);
+	}
+	else
+		free(data8);
+
 	showQueue(queue);
 
 	// Push to tail
 	example_t *data5 = (example_t *)calloc(1, sizeof(example_t));
 	data5->value = 6;
-	q_push_tail(queue, data5);
-	printf("(%d)Push Tail (V%Lf, L%d)\n", *val, data5->value, q_length(queue));
-	showQueue(queue);
+	if(!q_push_tail(queue, data5))
+		printf("(%d)Push %Lf to tail\n", *val, data5->value);
+	else
+		free(data5);
 
-	// Pop last element
-	q_pop_tail(queue);
-	printf("(%d)Pop Tail (L%d)\n", *val, q_length(queue));
 	showQueue(queue);
 
 	// Create new data with tail value
 	example_t *data9 = (example_t *)calloc(1, sizeof(example_t));
-	q_extract_tail(queue, data9, sizeof(example_t));
-	printf("Extract Tail Value: V%Lf\n", data9->value);
-	// Push previous to the end
-	q_push_tail(queue, data9);
-	printf("(%d)Push Tail (V%Lf, L%d)\n", *val, data9->value, q_length(queue));
+	if (!q_extract_tail(queue, data9, sizeof(example_t)))
+	{
+		printf("(%d)Extract tail value: %Lf\n", *val, data9->value);
+		// Push previous to the end
+
+		// Pop last element
+		if(!q_pop_tail(queue))
+			printf("(%d)Pop tail\n", *val);
+		else
+			printf("(%d)No tail value!\n", *val);
+		// Pop last element
+		if(!q_pop_tail(queue))
+			printf("(%d)Pop tail\n", *val);
+		else
+			printf("(%d)No tail value!\n", *val);
+
+		if(!q_push_tail(queue, data9))
+			printf("(%d)Push %Lf to tail\n", *val, data9->value);
+		else
+			free(data9);
+	}
+	else
+		free (data9);
+
 	showQueue(queue);
 
 	// Insert Sorted
 	example_t *data11 = (example_t *)calloc(1, sizeof(example_t));
-	data11->value = 1;
-	printf("(%d)Insert Sorted (V%Lf, L%d)\n", *val, data11->value, q_length(queue));
-	q_insert_sorted(queue, data11, compare_func);
+	data11->value = 5;
+	if(!q_insert_sorted(queue, data11, compare_func))
+		printf("(%d)Insert %Lf sorted\n", *val, data11->value);
+
 	showQueue(queue);
 
 	// Search for head and return it
-	example_t *data6 = q_peek_head(queue);
-	if (data6)
-		printf("(%d)Head value: V%Lf\n", *val, data6->value);
+	example_t *data30;
+	if(!q_peek_head(queue, (void *)&data30))
+		printf("(%d)Head value: V%Lf\n", *val, data30->value);
 
 	// Search for tail and return it
-	example_t *data7 = q_peek_tail(queue);
-	if (data7)
-		printf("(%d)Tail value: V%Lf\n", *val, data7->value);
+	example_t *data31;
+	if(!q_peek_tail(queue, (void *)&data31))
+		printf("(%d)Tail value: V%Lf\n", *val, data31->value);
 
+	printf("(%d)Extracted value outside queue: V%Lf\n", *val, data10->value);
 	free(data10);
 
 	return 0;
