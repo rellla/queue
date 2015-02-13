@@ -90,6 +90,15 @@ void *run_test(void *param)
 
 	showQueue(queue);
 
+	// Pop first element
+	example_t *data41;
+	if(!q_pop_head(queue, (void *)&data41))
+		printf("(%d)Pop head, saved to (2): %Lf\n", *val, data41->value);
+	else
+		printf("(%d)No head value\n", *val);
+
+	showQueue(queue);
+
 	// Push to head
 	example_t *data3 = (example_t *)calloc(1, sizeof(example_t));
 	data3->value = 5;
@@ -107,7 +116,7 @@ void *run_test(void *param)
 	// Create new data with head value, pop the head and do something with it
 	example_t *data10 = (example_t *)calloc(1, sizeof(example_t));
 	if (!q_extract_head(queue, data10, sizeof(example_t)))
-		printf("(%d)Save head value to (1): %Lf\n", *val, data10->value);
+		printf("(%d)Extract head value to (1): %Lf\n", *val, data10->value);
 	else
 		free(data10);
 
@@ -121,16 +130,7 @@ void *run_test(void *param)
 
 	showQueue(queue);
 
-	// Pop first element
-	example_t *data41 = q_pop_head(queue);
-	if (data41)
-		printf("(%d)Pop head, saved to (2): %Lf\n", *val, data41->value);
-	else
-		printf("(%d)No head value\n", *val);
-
-	showQueue(queue);
-
-	// Create new data with head value, pop the head and do something with it
+	// Create new data with head value and do something with it
 	example_t *data8 = (example_t *)calloc(1, sizeof(example_t));
 	if (!q_extract_head(queue, data8, sizeof(example_t)))
 	{
@@ -166,8 +166,8 @@ void *run_test(void *param)
 		// Push previous to the end
 
 		// Pop last element
-		example_t *data44 = q_pop_tail(queue);
-		if (data44)
+		example_t *data44;
+		if (!q_pop_tail(queue, (void *)&data44))
 			printf("(%d)Pop tail\n", *val);
 		else
 			printf("(%d)No tail value!\n", *val);
@@ -176,8 +176,7 @@ void *run_test(void *param)
 		showQueue(queue);
 
 		// Pop last element
-		data42 = q_pop_tail(queue);
-		if (data42)
+		if (!q_pop_tail(queue, (void *)&data42))
 			printf("(%d)Pop tail, saved to (3): %Lf\n", *val, data42->value);
 		else
 			printf("(%d)No tail value!\n", *val);

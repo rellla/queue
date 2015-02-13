@@ -54,8 +54,8 @@ NODE *allocate_node(void *data);
 
 qStatus q_push_tail(QUEUE *queue, void *data);
 qStatus q_push_head(QUEUE *queue, void *data);
-void *q_pop_tail(QUEUE *queue);
-void *q_pop_head(QUEUE *queue);
+qStatus q_pop_tail(QUEUE *queue, void **data);
+qStatus q_pop_head(QUEUE *queue, void **data);
 qStatus q_peek_tail(QUEUE *queue, void **data);
 qStatus q_peek_head(QUEUE *queue, void **data);
 qStatus q_extract_tail(QUEUE *queue, void *data, int size);
