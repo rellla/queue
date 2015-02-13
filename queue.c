@@ -55,7 +55,7 @@ qStatus q_push_tail(QUEUE *queue, void *data)
 	if (!node)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (queue->head == NULL)
 		queue->head = node;
@@ -66,7 +66,7 @@ qStatus q_push_tail(QUEUE *queue, void *data)
 	queue->tail = node;
 	queue->length++;
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }
@@ -84,7 +84,7 @@ qStatus q_push_head(QUEUE *queue, void* data)
 	if (!node)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (queue->head == NULL)
 		queue->tail = node;
@@ -95,7 +95,7 @@ qStatus q_push_head(QUEUE *queue, void* data)
 	queue->head = node;
 	queue->length++;
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }
@@ -114,7 +114,7 @@ qStatus q_insert_sorted(QUEUE *queue, void* data, action2 func)
 	if(!node_new)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 	NODE *node = queue->head;
 
 	while(node && (func(node->data, node_new->data) < 0))
@@ -151,7 +151,7 @@ qStatus q_insert_sorted(QUEUE *queue, void* data, action2 func)
 
 	queue->length++;
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }
@@ -164,11 +164,11 @@ qStatus q_pop_head(QUEUE *queue, void **data)
 	if (!queue)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (!queue->head)
 	{
-		pthread_mutex_unlock(&queue->mutex);
+		q_unlock(queue);
 		return Q_ERROR;
 	}
 
@@ -185,7 +185,7 @@ qStatus q_pop_head(QUEUE *queue, void **data)
 	queue->length--;
 	q_node_free(tmp, 0);
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 	return Q_SUCCESS;
 }
 
@@ -197,11 +197,11 @@ qStatus q_pop_tail(QUEUE *queue, void **data)
 	if (!queue)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (!queue->tail)
 	{
-		pthread_mutex_unlock(&queue->mutex);
+		q_unlock(queue);
 		return Q_ERROR;
 	}
 
@@ -218,7 +218,7 @@ qStatus q_pop_tail(QUEUE *queue, void **data)
 	queue->length--;
 	q_node_free(tmp, 0);
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 	return Q_SUCCESS;
 }
 
@@ -230,12 +230,12 @@ qStatus q_extract_head(QUEUE *queue, void *data, int size)
 	if (!queue || !data)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (queue->head)
 		memcpy(data, queue->head->data, size);
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }
@@ -248,12 +248,12 @@ qStatus q_extract_tail(QUEUE *queue, void *data, int size)
 	if (!queue || !data)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (queue->tail)
 		memcpy(data, queue->tail->data, size);
 
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }
@@ -266,16 +266,16 @@ qStatus q_peek_head(QUEUE *queue, void **data)
 	if (!queue)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (!queue->head)
 	{
-		pthread_mutex_unlock(&queue->mutex);
+		q_unlock(queue);
 		return Q_ERROR;
 	}
 
 	*data = queue->head->data;
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 	return Q_SUCCESS;
 }
 
@@ -287,16 +287,16 @@ qStatus q_peek_tail(QUEUE *queue, void **data)
 	if (!queue)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	if (!queue->tail)
 	{
-		pthread_mutex_unlock(&queue->mutex);
+		q_unlock(queue);
 		return Q_ERROR;
 	}
 
 	*data = queue->tail->data;
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 	return Q_SUCCESS;
 }
 
@@ -327,7 +327,7 @@ qStatus q_queue_free(QUEUE *queue)
 	if (!queue)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 
 	NODE *tmp = queue->head;
 	while(tmp)
@@ -336,7 +336,7 @@ qStatus q_queue_free(QUEUE *queue)
 		q_node_free(tmp, 1);
 		tmp = next;
 	}
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 	pthread_mutex_destroy(&queue->mutex);
 	free(queue);
 
@@ -359,6 +359,28 @@ qStatus q_node_free(NODE *node, int data_free)
 	return Q_SUCCESS;
 }
 
+/* lock the queue
+ *
+ */
+qStatus q_lock(QUEUE *queue)
+{
+	if(pthread_mutex_lock(&queue->mutex))
+		return Q_LOCKERROR;
+
+	return  Q_SUCCESS;
+}
+
+/* unlock the queue
+ *
+ */
+qStatus q_unlock(QUEUE *queue)
+{
+	if(pthread_mutex_unlock(&queue->mutex))
+		return Q_LOCKERROR;
+
+	return  Q_SUCCESS;
+}
+
 /* do something recursive with the queue's data
  *
  */
@@ -367,7 +389,7 @@ qStatus q_recursive(QUEUE *queue, action func)
 	if (!queue || !func)
 		return Q_ERROR;
 
-	pthread_mutex_lock(&queue->mutex);
+	q_lock(queue);
 	NODE *node = queue->head;
 
 	while(node != NULL)
@@ -375,7 +397,7 @@ qStatus q_recursive(QUEUE *queue, action func)
 		func(node->data);
 		node = node->next;
 	}
-	pthread_mutex_unlock(&queue->mutex);
+	q_unlock(queue);
 
 	return Q_SUCCESS;
 }

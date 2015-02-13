@@ -30,6 +30,7 @@ typedef enum
 	Q_SUCCESS,
 	Q_EMPTY_NODE,
 	Q_EMPTY,
+	Q_LOCKERROR,
 	Q_ERROR
 } qStatus;
 
@@ -49,7 +50,6 @@ typedef struct Queue
 } QUEUE;
 
 QUEUE *q_queue_init(void);
-NODE *q_node_init(void);
 NODE *allocate_node(void *data);
 
 qStatus q_push_tail(QUEUE *queue, void *data);
@@ -67,5 +67,7 @@ int q_length(QUEUE *queue);
 
 qStatus q_queue_free(QUEUE *queue);
 qStatus q_node_free(NODE *node, int data_free);
+qStatus q_lock(QUEUE *queue);
+qStatus q_unlock(QUEUE *queue);
 
 qStatus q_recursive(QUEUE *queue, action func);
