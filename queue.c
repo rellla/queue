@@ -268,15 +268,15 @@ qStatus q_peek_head(QUEUE *queue, void **data)
 
 	pthread_mutex_lock(&queue->mutex);
 
-	if (queue->head)
+	if (!queue->head)
 	{
-		*data = queue->head->data;
 		pthread_mutex_unlock(&queue->mutex);
-		return Q_SUCCESS;
+		return Q_ERROR;
 	}
 
+	*data = queue->head->data;
 	pthread_mutex_unlock(&queue->mutex);
-	return Q_ERROR;
+	return Q_SUCCESS;
 }
 
 /* find node at tail position and return it
@@ -289,15 +289,15 @@ qStatus q_peek_tail(QUEUE *queue, void **data)
 
 	pthread_mutex_lock(&queue->mutex);
 
-	if (queue->tail->data)
+	if (!queue->tail)
 	{
-		*data = queue->tail->data;
 		pthread_mutex_unlock(&queue->mutex);
-		return Q_SUCCESS;
+		return Q_ERROR;
 	}
 
+	*data = queue->tail->data;
 	pthread_mutex_unlock(&queue->mutex);
-	return Q_ERROR;
+	return Q_SUCCESS;
 }
 
 /* check, if queue is empty

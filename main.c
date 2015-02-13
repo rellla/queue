@@ -70,6 +70,21 @@ void *run_test(void *param)
 	printf("(%d)Start filling.\n", *val);
 	check_if_empty(queue);
 
+	// Pop first element
+	example_t *data62;
+	if(!q_pop_head(queue, (void *)&data62))
+		printf("(%d)Pop head, saved to (2): %Lf\n", *val, data62->value);
+	else
+		printf("(%d)Pop head: Nothing to pop\n", *val);
+
+	// Peek last element
+	example_t *data63;
+	if(!q_peek_tail(queue, (void *)&data63))
+		printf("(%d)Tail value: %Lf\n", *val, data63->value);
+	else
+		printf("(%d)Peek head: Nothing to peek\n", *val);
+
+
 	// Push to tail
 	example_t *data1 = (example_t *)calloc(1, sizeof(example_t));
 	data1->value = 2;
